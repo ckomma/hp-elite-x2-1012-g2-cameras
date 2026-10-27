@@ -1,0 +1,15 @@
+[Unit]
+Description=HP Elite x2 1012 G2 Universal Camera Fixture (Front, Rear, IR)
+After=systemd-modules-load.service
+Before=pipewire.service wireplumber.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecCondition=/usr/local/libexec/hp-camera-unified supported
+ExecStart=/usr/local/libexec/hp-camera-unified start
+ExecStop=/usr/local/libexec/hp-camera-unified stop
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target

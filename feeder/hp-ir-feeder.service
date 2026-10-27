@@ -1,0 +1,14 @@
+[Unit]
+Description=HP Elite x2 IR Camera & WLED2 Bridge for Howdy
+After=hp-camera-unified.service
+Wants=hp-camera-unified.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/hp-ir-feeder
+Restart=always
+RestartSec=2
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target
