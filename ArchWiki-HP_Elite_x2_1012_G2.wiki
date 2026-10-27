@@ -1,10 +1,4 @@
 [[Category:HP]]
-{{Device summary
-| manufacturer = HP
-| name = Elite x2 1012 G2
-| image = 
-| link = https://support.hp.com/
-}}
 
 The '''HP Elite x2 1012 G2''' (Motherboard 82CA) is a 12.3" 2-in-1 detachable tablet PC powered by 7th generation Intel Core (Kaby Lake-Y / Kaby Lake-U) processors.
 
