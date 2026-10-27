@@ -80,7 +80,7 @@ use_cnn = true
 end_report = false
 </pre>
 
-{{Note|1=Setting {{ic|dark_threshold = 95}} is essential. In dark rooms, background darkness causes frames to exceed Howdy's default 60% threshold, leading to false "Face detection image too dark" rejections.}}
+{{Note|Setting {{ic|dark_threshold}} to 95 is essential. In dark rooms, background darkness causes frames to exceed Howdy's default 60% threshold, leading to false "Face detection image too dark" rejections.}}
 
 Add face models:
 # howdy -U <username> add
