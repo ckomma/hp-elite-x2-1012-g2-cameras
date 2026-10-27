@@ -37,7 +37,7 @@ Hardware details and compatibility status are recorded in the [https://linux-har
 |-
 | IR Illuminator || {{Yes}} || {{ic|INT3472:05}} || Texas Instruments TPS68470 WLED2 (Hardware Torch mode)
 |-
-| Fingerprint Reader || {{Partial}} || {{ic|138a:00ab}} || Validity Sensors (libfprint experimental)
+| Fingerprint Reader || Partial || {{ic|138a:00ab}} || Validity Sensors (libfprint experimental)
 |}
 
 == Webcams and Windows Hello ==
