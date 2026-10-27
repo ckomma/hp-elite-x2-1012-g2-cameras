@@ -1,0 +1,104 @@
+[[Category:HP]]
+{{Device summary
+| manufacturer = HP
+| name = Elite x2 1012 G2
+| image = 
+| link = https://support.hp.com/
+}}
+
+The '''HP Elite x2 1012 G2''' (Motherboard 82CA) is a 12.3" 2-in-1 detachable tablet PC powered by 7th generation Intel Core (Kaby Lake-Y / Kaby Lake-U) processors.
+
+Hardware details and compatibility status are recorded in the [https://linux-hardware.org/?probe=2f01122616 Linux Hardware Database].
+
+== Hardware status ==
+
+{| class="wikitable archwiki-table-laptop"
+! Device !! Working !! PCI/USB/I2C ID !! Note
+|-
+| Graphics || {{Yes}} || {{ic|8086:5916}} || Intel HD Graphics 620
+|-
+| Audio || {{Yes}} || {{ic|8086:9d71}} || Intel Sunrise Point-LP HD Audio
+|-
+| Wireless || {{Yes}} || {{ic|8086:24fd}} || Intel Dual Band Wireless-AC 8265
+|-
+| Bluetooth || {{Yes}} || {{ic|8087:0a2b}} || Intel Bluetooth
+|-
+| Touchscreen || {{Yes}} || {{ic|04f3:2334}} || Wacom I2C Digitizer / Elan
+|-
+| Stylus / Pen || {{Yes}} || {{ic|04f3:2334}} || Wacom Active ES Pen
+|-
+| Accelerometer || {{Yes}} || {{ic|INT3472}} || Auto-rotation supported via iio-sensor-proxy
+|-
+| Front RGB Camera || {{Yes}} || {{ic|8086:9d32}} || OmniVision OV5670 (5.0 MP) via IPU3 CIO2 & libcamera
+|-
+| Rear RGB Camera || {{Yes}} || {{ic|8086:9d32}} || OmniVision OV8858 (8.0 MP) via IPU3 CIO2 & libcamera
+|-
+| Infrared Camera || {{Yes}} || {{ic|8086:9d32}} || OmniVision OV7251 (Monochrome) via [[#Webcams and Windows Hello|DKMS driver]]
+|-
+| IR Illuminator || {{Yes}} || {{ic|INT3472:05}} || Texas Instruments TPS68470 WLED2 (Hardware Torch mode)
+|-
+| Fingerprint Reader || {{Partial}} || {{ic|138a:00ab}} || Validity Sensors (libfprint experimental)
+|}
+
+== Webcams and Windows Hello ==
+
+The HP Elite x2 incorporates three cameras connected via MIPI CSI-2 to an Intel IPU3 (CIO2) imaging processor and managed by a Texas Instruments TPS68470 PMIC:
+* '''Front RGB Webcam:''' OmniVision OV5670 (5 MP) on CSI-2 Port 1
+* '''Rear RGB Camera:''' OmniVision OV8858 (8 MP) on CSI-2 Port 0
+* '''Near-Infrared (NIR) Camera:''' OmniVision OV7251 (640x480) on CSI-2 Port 2
+* '''IR Illuminator:''' TPS68470 WLED2 driven at 97.5 mA
+
+Mainline kernels do not initialize all three sensors simultaneously due to Intel IPU3 single-DMA receiver limits and PMIC sequencing. A DKMS package and on-demand V4L2 bridge are provided in [https://github.com/ckomma/hp-elite-x2-1012-g2-cameras hp-elite-x2-1012-g2-cameras].
+
+=== Driver Installation ===
+
+Install dependencies:
+# pacman -S base-devel dkms v4l2loopback-dkms v4l-utils git
+
+Clone the repository and run the automated installer:
+$ git clone https://github.com/ckomma/hp-elite-x2-1012-g2-cameras.git
+$ cd hp-elite-x2-1012-g2-cameras
+# ./install.sh
+
+The installer performs the following:
+# Installs {{ic|hp-camera-unified}} to DKMS, ensuring automated module compilation on future kernel upgrades.
+# Configures WirePlumber rules to isolate the loopback device, guaranteeing the front RGB camera defaults in desktop apps (Snapshot, Cheese, Zoom) while preserving rear camera toggling.
+# Starts {{ic|hp-ir-feeder.service}}, which listens via inotify to only power up the IR camera and WLED2 illuminator when an authentication request occurs.
+
+=== Howdy (Windows Hello Facial Authentication) ===
+
+Install [[Howdy]] (available in the AUR as {{AUR|howdy}} or {{AUR|howdy-git}}).
+
+Edit {{ic|/etc/howdy/config.ini}}:
+<pre>
+[video]
+device_path = /dev/video20
+dark_threshold = 95
+use_cnn = true
+
+[debug]
+end_report = false
+</pre>
+
+{{Note|1=Setting {{ic|dark_threshold = 95}} is essential. In dark rooms, background darkness causes frames to exceed Howdy's default 60% threshold, leading to false "Face detection image too dark" rejections.}}
+
+Add face models:
+# howdy -U <username> add
+
+Configure PAM for [[sudo]] in {{ic|/etc/pam.d/sudo}}:
+<pre>
+auth sufficient pam_python.so /lib/security/howdy/pam.py
+</pre>
+
+Configure PAM for GDM screen unlocking in {{ic|/etc/pam.d/gdm-password}}:
+<pre>
+auth sufficient pam_python.so /lib/security/howdy/pam.py
+</pre>
+
+Authentication operates in total darkness using the active TPS68470 WLED2 infrared emitter.
+
+== See also ==
+
+* [https://github.com/ckomma/hp-elite-x2-1012-g2-cameras GitHub: HP Elite x2 1012 G2 Camera & Howdy Suite]
+* [https://linux-hardware.org/?probe=2f01122616 Linux Hardware Database: Probe 2f01122616]
+* [[Laptop/HP]]
